@@ -1,114 +1,114 @@
-# 🚀 Discord Token Checker
-
-A fast and multi-threaded token checker for Discord accounts using `tls_client`.
-
----
-
-## 📌 Features
-
-- ✅ Check token validity (Valid / Invalid / Locked)
-- 🚩 Detect flagged accounts
-- 💎 Detect Nitro subscriptions and remaining days
-- 🚀 High performance with multi-threading
-- 🌐 Proxy support (HTTP)
-- 📊 Live statistics (CPM, progress, remaining)
-- 📁 Automatically sorted output:
-  - valid
-  - invalid
-  - locked
-  - flagged
-  - categorized by age and boosts
-
----
-
-## 📂 Project Structure
+# Karenisme — Discord Token Checker
 
 ```
-.
+██╗  ██╗ █████╗ ██████╗ ███████╗███╗   ██╗██╗███████╗███╗   ███╗███████╗
+██║ ██╔╝██╔══██╗██╔══██╗██╔════╝████╗  ██║██║██╔════╝████╗ ████║██╔════╝
+█████╔╝ ███████║██████╔╝█████╗  ██╔██╗ ██║██║███████╗██╔████╔██║█████╗  
+██╔═██╗ ██╔══██║██╔══██╗██╔══╝  ██║╚██╗██║██║╚════██║██║╚██╔╝██║██╔══╝  
+██║  ██╗██║  ██║██║  ██║███████╗██║ ╚████║██║███████║██║ ╚═╝ ██║███████╗
+╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═╝╚══════╝╚═╝     ╚═╝╚══════╝
+```
+
+> A fast, multi-threaded Discord token checker with proxy support, detailed classification by status, account age, Nitro subscription, and server boosts.
+
+---
+
+## ✨ Features
+
+- ✅ Checks tokens and classifies them as **Valid**, **Invalid**, **Locked**, or **Flagged**
+- 🔐 Verification type detection: `unclaimed`, `email verified`, `phone verified`, `fully verified`
+- 🎂 Account age sorting by months or years
+- 💎 Nitro detection with days remaining
+- 🚀 Available server boost slot detection
+- 🔄 HTTP proxy support with auto-rotation on rate limit
+- ⚡ Multi-threaded for high-speed checking (configurable thread count)
+- 🎨 Colorized console output with real-time title bar stats (Windows)
+- 📁 Organized output files sorted by type, age, and boost count
+
+---
+
+## 📁 Project Structure
+
+```
 ├── main.py
 ├── data/
-│   ├── tokens.txt
-│   ├── proxies.txt
-│   ├── config.toml
-│   └── settings.json
+│   ├── config.toml       # Main configuration (threads, proxyless mode)
+│   ├── settings.json     # Feature toggles (flagged, type, age, nitro)
+│   ├── tokens.txt        # Input tokens (one per line)
+│   └── proxies.txt       # Proxy list (one per line, user:pass@host:port or host:port)
 └── output/
+    └── YYYY-MM-DD HH-MM-SS/
+        ├── valid.txt
+        ├── invalid.txt
+        ├── locked.txt
+        ├── flagged.txt
+        ├── email verified.txt
+        ├── phone verified.txt
+        ├── fully verified.txt
+        ├── age/
+        │   └── {X months | X years}/
+        │       └── {type}.txt
+        └── boosts/
+            └── {X days}/
+                └── {Y boosts}.txt
 ```
 
 ---
 
 ## ⚙️ Configuration
 
-### config.toml
+### `data/config.toml`
 
 ```toml
 [main]
-threads = 10        # number of threads
-proxyless = false   # true = no proxy
+threads = 50        # Number of concurrent threads
+proxyless = false   # Set to true to run without proxies
 ```
 
----
-
-### settings.json
+### `data/settings.json`
 
 ```json
 {
-  "flagged": true,
-  "type": true,
-  "age": true,
-  "nitro": true
+  "flagged": true,   # Detect and separate flagged accounts
+  "type": true,      # Classify by verification type
+  "age": true,       # Sort by account age
+  "nitro": true      # Detect Nitro subscriptions and boosts
 }
 ```
 
-| Option   | Description |
-|----------|------------|
-| flagged  | Detect flagged accounts |
-| type     | Show verification type |
-| age      | Sort accounts by age |
-| nitro    | Check Nitro and boosts |
-
 ---
 
-## 📥 Input Files
+## 📋 Input Format
 
-### tokens.txt
-
-Supported formats:
+**`data/tokens.txt`** — One token per line. Supports both raw tokens and `email:password:token` format:
 
 ```
-token
-email:password:token
-anything:token
+mfa.xxxxxxxxxxxxxxxx...
+user@email.com:password:xxxxxxxxxxxxxxxx...
 ```
 
-The tool automatically extracts the token using:
+**`data/proxies.txt`** — One proxy per line:
+
 ```
-split(":")[-1]
+host:port
+user:password@host:port
 ```
 
 ---
 
-### proxies.txt
+## 🚀 Installation & Usage
 
-Supported formats:
+### Requirements
 
-```
-ip:port
-user:pass@ip:port
-```
+- Python 3.8+
 
----
-
-## ▶️ Usage
-
-### 1. Install dependencies
+### Install dependencies
 
 ```bash
 pip install tls-client colorama toml
 ```
 
----
-
-### 2. Run the tool
+### Run
 
 ```bash
 python main.py
@@ -116,59 +116,42 @@ python main.py
 
 ---
 
-## 📊 Example Output
+## 📊 Console Output
 
+The checker displays real-time colored logs for each token:
+
+| Status | Description |
+|--------|-------------|
+| `[VALID]` | Token is active and usable |
+| `[INVALID]` | Token is expired or incorrect |
+| `[LOCKED]` | Account has been locked by Discord |
+| `[FLAGGED]` | Account is flagged (spammer flag detected) |
+| `[RATE LIMITED]` | Too many requests — proxy rotated automatically |
+
+Each valid token log displays: `token` · `username` · `user ID` · `guild count` · `age` · `nitro` · `boosts`
+
+**Windows title bar** updates in real-time with:
 ```
-[12:00:01] → [VALID] → [FULLY VERIFIED] → token: [abc123]
-→ user: [username] → id: [123456789]
-→ guilds: [5] → nitro: [30d] → boosts: [2]
+Token Checker - Valid: X | Invalid: X | Locked: X | Flagged: X | Remaining: X | Progress: XX.XX% | CPM: X
 ```
 
 ---
 
-## 📁 Output
+## 📤 Output
 
-Results are saved in:
-
-```
-output/YYYY-MM-DD HH-MM-SS/
-```
-
-Files include:
-
-- valid.txt
-- invalid.txt
-- locked.txt
-- flagged.txt
-- age/
-- boosts/
+Results are saved to a timestamped folder under `output/` after each run. Files are automatically created only when tokens of that category are found.
 
 ---
 
-## ⚡ Performance
+## ⚠️ Disclaimer
 
-- Multi-threaded using ThreadPoolExecutor
-- Automatic retry on:
-  - rate limit (429)
-  - proxy errors
-- Real-time stats:
-  - CPM (checks per minute)
-  - Progress %
-  - Remaining tokens
+This tool is provided for **educational purposes only**. Using this tool may violate [Discord's Terms of Service](https://discord.com/terms). The author is not responsible for any misuse or consequences arising from the use of this software. Use at your own risk.
 
 ---
 
-## ⚠️ Notes
+## 👤 Author
 
-- Using proxies is recommended to avoid rate limits
-- Duplicate tokens are automatically removed
-- Uses unofficial API endpoints (may break in the future)
-
----
-
-## 🧠 Credits
-
-- Original author: fufuyaunn
-- Improvements: logging, formatting, and performance tweaks
-
----
+**fufuyaunn**
+- Telegram: [@swllette](https://t.me/swllette)
+- Website: [karenhoyoshi.asia](https://karenhoyoshi.asia)
+- Discord: `fufuyaunn`
