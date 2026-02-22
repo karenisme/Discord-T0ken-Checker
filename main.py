@@ -121,8 +121,7 @@ class Checker:
                     LOCK.release()
 
                 if r.status_code == 200:
-                    # get discord account flags and user info
-                    guilds_count = len(r.json())  # Số lượng server
+                    guilds_count = len(r.json()) 
                     r = self.session.get(f"https://discord.com/api/v9/users/@me")
                     user_data = r.json()
                     
@@ -195,7 +194,6 @@ class Checker:
                             with open(f"{output_folder}/boosts/{days_left:.0f} days/{available} boosts.txt", "a") as f:
                                 f.write(token + "\n")
 
-                    # Format log output
                     log_parts = [f"{timeShit()} → {bcolors.SUCCESS}[VALID]{bcolors.ENDC}"]
                     log_parts.append(f"{bcolors.PURPLE}[{type.upper()}]{bcolors.ENDC}")
                     log_parts.append(f"token: {bcolors.CYAN}[{tkv}]{bcolors.ENDC}")
